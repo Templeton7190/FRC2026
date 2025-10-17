@@ -13,13 +13,18 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.LEDPattern;
+import frc.robot.commands.Track;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.LIDARLite;
+import frc.robot.subsystems.LidarSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -35,10 +40,13 @@ import java.util.List;
 public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  private final LIDARLite m_lidarSubsystem = new LIDARLite(I2C.Port.kOnboard);
   public int patternNum = 1;
 
   // The driver's controller
   XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+
+  private final Joystick m_driverController2 = new Joystick(1);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -76,6 +84,14 @@ public class RobotContainer {
             m_robotDrive));
     new JoystickButton(m_driverController, XboxController.Button.kB.value)
         .onTrue(new LEDPattern(m_robotDrive, this, patternNum));
+    new JoystickButton(m_driverController2, 3)
+        .whileTrue(new Track(m_robotDrive, m_lidarSubsystem, 1));   
+    new JoystickButton(m_driverController2, 4)
+        .whileTrue(new Track(m_robotDrive, m_lidarSubsystem, 2));
+    new JoystickButton(m_driverController2, 1)
+        .whileTrue(new Track(m_robotDrive, m_lidarSubsystem, 3));
+    new JoystickButton(m_driverController2, 2)
+        .whileTrue(new Track(m_robotDrive, m_lidarSubsystem, 4));
   }
 
   /**
